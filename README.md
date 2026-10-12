@@ -122,3 +122,24 @@ It has two interview settings that line up with these packs:
 
 It also keeps a local practice transcript so you can review how you used the assistant afterwards.
 Requires VS Code 1.90 or later and Ollama.
+
+
+## Practising on real codebases in the browser
+
+[Groundwork](https://groundwork-two-roan.vercel.app/) (beta) is a hosted version of
+this same drill: "Every engineer gets a real codebase," nothing to install. You get a
+timed ticket (a bug report, a failing test suite, or a small feature) pinned to a real
+repository, an isolated browser-based VS Code editor and terminal with dependencies
+preinstalled and no internet, and a 30 to 35 minute budget. Tasks are in TypeScript and
+Python (Node, Express, Jest, pytest). On submit, hidden checks run against the behaviour
+the ticket describes and the repo's existing tests run again; you get your diff, each
+check's pass or fail, and your duration, with no composite score and no leaderboard.
+
+It has a built-in AI assistant, **Pair**, that reads the repository and explains code. In
+its default **guarded** mode it will not write the fix, which is exactly the Bloomberg
+posture: use the assistant to understand the code, then write and own the change yourself.
+You can switch it to an ordinary assistant, and that choice is recorded with the attempt.
+
+It is free to start and needs an account. Use Groundwork for the "unfamiliar codebase
+under time pressure" muscle in TypeScript and Python; use the packs in this repo when you
+want to drill offline, or in C++ and Java, or rehearse the round-1 explain-out-loud flow.
