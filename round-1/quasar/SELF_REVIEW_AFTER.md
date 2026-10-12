@@ -1,4 +1,4 @@
-# Self-review guide — Rate Limiter
+# Self-review guide - Rate Limiter
 
 This file is for AFTER the exercise. It lists what strong candidates tend to
 notice. It is not a patch: there is no corrected code here, only the observations

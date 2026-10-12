@@ -26,10 +26,11 @@ language you want to interview in.
 
 ```text
 round-1/halcyon/                         round-2/harbor/
-  CANDIDATE_BRIEF.md                        README.md
-  PROJECT_MANAGER_NOTES.md                  SETUP.md
-  SELF_REVIEW_AFTER.md                      tickets/
-  SETUP.md                                  python/  cpp/  java/
+  README.md         scope                  README.md         scope + rules
+  CANDIDATE_BRIEF.md                        SETUP.md
+  PROJECT_MANAGER_NOTES.md                  tickets/
+  SELF_REVIEW_AFTER.md                      python/  cpp/  java/
+  SETUP.md
   python/  cpp/  java/
 ```
 

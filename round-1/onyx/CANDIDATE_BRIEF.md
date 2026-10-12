@@ -1,4 +1,4 @@
-# Candidate Brief — Access Token Store
+# Candidate Brief - Access Token Store
 
 You are joining an existing project late in development.
 

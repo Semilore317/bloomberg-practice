@@ -1,4 +1,4 @@
-# Candidate Brief — Subscription Entitlement
+# Candidate Brief - Subscription Entitlement
 
 You are joining an existing project late in development.
 

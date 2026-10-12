@@ -12,6 +12,16 @@ You may use the available AI assistant and normal repository tools. Treat the as
 junior developer: establish a plan, inspect its work, run the tests, and retain ownership of the
 result.
 
+## Scope
+
+In scope: work the tickets in `tickets/`, fixing the defects they report and
+confirming each with a test you write. Keep all existing, correct behaviour working.
+
+Out of scope: redesigning the services, changing public APIs, or adding features no
+ticket asks for.
+
+Time budget: about 45 minutes.
+
 ## Reproduce and test it yourself
 
 This pack ships no tests. The code is the same in `python/`, `cpp/`, and `java/`;

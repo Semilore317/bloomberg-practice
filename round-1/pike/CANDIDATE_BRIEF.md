@@ -1,4 +1,4 @@
-# Candidate Brief — Document Approval Workflow
+# Candidate Brief - Document Approval Workflow
 
 You are joining an existing project late in development.
 

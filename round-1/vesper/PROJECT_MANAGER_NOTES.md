@@ -1,4 +1,4 @@
-# Project Manager Notes — Connection Pool
+# Project Manager Notes - Connection Pool
 
 Do not read this until after your first pass.
 

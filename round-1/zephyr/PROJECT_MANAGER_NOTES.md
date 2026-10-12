@@ -1,4 +1,4 @@
-# Project Manager Notes — Subscription Entitlement
+# Project Manager Notes - Subscription Entitlement
 
 Do not read this until after your first pass.
 

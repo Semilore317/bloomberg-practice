@@ -1,4 +1,4 @@
-# Candidate Brief — Order Lifecycle
+# Candidate Brief - Order Lifecycle
 
 You are joining an existing project late in development.
 

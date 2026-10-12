@@ -1,4 +1,4 @@
-# Candidate Brief — Inventory Reservations
+# Candidate Brief - Inventory Reservations
 
 You are joining an existing project late in development.
 

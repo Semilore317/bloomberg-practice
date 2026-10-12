@@ -1,4 +1,4 @@
-# Project Manager Notes — Document Approval Workflow
+# Project Manager Notes - Document Approval Workflow
 
 Do not read this until after your first pass.
 

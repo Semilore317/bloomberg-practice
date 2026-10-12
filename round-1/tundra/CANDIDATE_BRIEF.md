@@ -1,4 +1,4 @@
-# Candidate Brief — LRU Cache with TTL
+# Candidate Brief - LRU Cache with TTL
 
 You are joining an existing project late in development.
 

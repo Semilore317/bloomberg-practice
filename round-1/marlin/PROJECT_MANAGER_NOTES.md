@@ -1,4 +1,4 @@
-# Project Manager Notes — Inventory Reservations
+# Project Manager Notes - Inventory Reservations
 
 Do not read this until after your first pass.
 

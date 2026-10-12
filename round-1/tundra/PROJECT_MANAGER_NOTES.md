@@ -1,4 +1,4 @@
-# Project Manager Notes — LRU Cache with TTL
+# Project Manager Notes - LRU Cache with TTL
 
 Do not read this until after your first pass.
 

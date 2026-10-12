@@ -1,4 +1,4 @@
-# Project Manager Notes — Access Token Store
+# Project Manager Notes - Access Token Store
 
 Do not read this until after your first pass.
 

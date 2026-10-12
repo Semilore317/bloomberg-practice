@@ -1,4 +1,4 @@
-# Project Manager Notes — Wallet Authorization Holds
+# Project Manager Notes - Wallet Authorization Holds
 
 Do not read this until after your first pass.
 

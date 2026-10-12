@@ -1,4 +1,4 @@
-# Project Manager Notes — Order Lifecycle
+# Project Manager Notes - Order Lifecycle
 
 Do not read this until after your first pass.
 

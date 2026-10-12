@@ -1,4 +1,4 @@
-# Candidate Brief — Connection Pool
+# Candidate Brief - Connection Pool
 
 You are joining an existing project late in development.
 

@@ -1,4 +1,4 @@
-# Candidate Brief — Rate Limiter
+# Candidate Brief - Rate Limiter
 
 You are joining an existing project late in development.
 

@@ -1,4 +1,4 @@
-# Project Manager Notes — Job State Machine
+# Project Manager Notes - Job State Machine
 
 Do not read this until after your first pass.
 

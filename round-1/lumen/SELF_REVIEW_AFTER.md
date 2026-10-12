@@ -1,4 +1,4 @@
-# Self-review guide — Job State Machine
+# Self-review guide - Job State Machine
 
 This file is for AFTER the exercise. It lists what strong candidates tend to
 notice. It is not a patch: there is no corrected code here, only the observations

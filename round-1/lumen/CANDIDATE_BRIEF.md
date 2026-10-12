@@ -1,4 +1,4 @@
-# Candidate Brief — Job State Machine
+# Candidate Brief - Job State Machine
 
 You are joining an existing project late in development.
 

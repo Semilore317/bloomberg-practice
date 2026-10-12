@@ -1,4 +1,4 @@
-# Project Manager Notes — Rate Limiter
+# Project Manager Notes - Rate Limiter
 
 Do not read this until after your first pass.
 

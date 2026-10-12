@@ -1,4 +1,4 @@
-# Candidate Brief — Wallet Authorization Holds
+# Candidate Brief - Wallet Authorization Holds
 
 You are joining an existing project late in development.
 
