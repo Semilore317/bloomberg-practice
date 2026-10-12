@@ -43,8 +43,6 @@ class OrderService:
         order = self._get(order_id)
         if qty <= 0:
             raise ValueError("fill qty must be positive")
-        # BUG: no status guard, a cancelled (or filled) order can still be filled
-        # BUG: no overfill guard, filled may exceed the original qty
         order.filled += qty
         if order.filled == order.qty:
             order.status = OrderStatus.FILLED
@@ -54,7 +52,6 @@ class OrderService:
 
     def cancel(self, order_id: str) -> Order:
         order = self._get(order_id)
-        # BUG: no terminal-state guard, a cancelled/filled order can be cancelled again
         order.status = OrderStatus.CANCELLED
         return order
 
@@ -63,7 +60,6 @@ class OrderService:
         return order.qty - order.filled
 
     def open_qty_for(self, symbol: str) -> int:
-        # BUG: does not filter by status, so cancelled orders still count as open
         return sum(o.qty - o.filled for o in self._orders.values() if o.symbol == symbol)
 
     def _get(self, order_id: str) -> Order:

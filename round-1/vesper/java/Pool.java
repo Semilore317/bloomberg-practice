@@ -5,14 +5,11 @@ public class Pool {
     private final int capacity; private final Map<String,Connection> conns=new LinkedHashMap<>(); private boolean closed=false; private int seq=0;
     public Pool(int capacity){ this.capacity=capacity; }
     public Connection acquire(){
-        // BUG: no closed check
         for(Connection c: conns.values()) if(c.status==ConnStatus.IDLE){ c.status=ConnStatus.IN_USE; return c; }
-        // BUG: no capacity check
         String id="C"+(++seq); Connection c=new Connection(id); conns.put(id,c); return c;
     }
     public Connection release(String id){
         Connection c=get(id);
-        // BUG: no status guard
         c.status=ConnStatus.IDLE; return c;
     }
     public void close(){ closed=true; }

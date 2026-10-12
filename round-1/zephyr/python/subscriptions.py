@@ -40,9 +40,7 @@ class SubscriptionService:
         return sub
 
     def activate(self, sub_id: str) -> Subscription:
-        # BUG: does not clean up expiry first, so an expired trial can still be activated
         sub = self._get(sub_id)
-        # BUG: no guard against reactivating a cancelled subscription
         sub.status = SubStatus.ACTIVE
         sub.expires_at = None
         return sub
@@ -63,13 +61,11 @@ class SubscriptionService:
 
     def cancel(self, sub_id: str) -> Subscription:
         sub = self._get(sub_id)
-        # BUG: no terminal-state guard, a cancelled subscription can be cancelled again
         sub.status = SubStatus.CANCELLED
         sub.expires_at = None
         return sub
 
     def is_entitled(self, sub_id: str) -> bool:
-        # BUG: does not clean up expiry, so an expired trial still reads as entitled
         sub = self._get(sub_id)
         if sub.status == SubStatus.ACTIVE:
             return True

@@ -17,18 +17,15 @@ public class Inventory {
         String id="R"+(++seq); Reservation r=new Reservation(id,sku,qty,clock.getAsDouble()+ttl); res.put(id,r); available.put(sku,available.get(sku)-qty); return r;
     }
     public Reservation commit(String id){
-        // BUG: no cleanup first
         Reservation r=get(id);
         if(r.status!=ResStatus.HELD) throw new IllegalArgumentException("only held");
         r.status=ResStatus.COMMITTED; r.hasExpiry=false; return r;
     }
     public Reservation release(String id){
         Reservation r=get(id);
-        // BUG: no status guard
         available.put(r.sku,available.get(r.sku)+r.qty); r.status=ResStatus.RELEASED; r.hasExpiry=false; return r;
     }
     public int reservedUnits(String sku){
-        // BUG: no cleanup
         return capacity.get(sku)-available.get(sku);
     }
     public Reservation get(String id){ Reservation r=res.get(id); if(r==null) throw new IllegalArgumentException("not found"); return r; }

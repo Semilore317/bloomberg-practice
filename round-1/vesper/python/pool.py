@@ -26,12 +26,10 @@ class ConnectionPool:
         self._seq = 0
 
     def acquire(self) -> Connection:
-        # BUG: does not check whether the pool is closed
         for c in self._conns.values():
             if c.status == ConnStatus.IDLE:
                 c.status = ConnStatus.IN_USE
                 return c
-        # BUG: does not enforce capacity, so the pool can exceed its size
         self._seq += 1
         cid = f"C{self._seq}"
         c = Connection(cid, ConnStatus.IN_USE)
@@ -40,7 +38,6 @@ class ConnectionPool:
 
     def release(self, conn_id: str) -> Connection:
         c = self._get(conn_id)
-        # BUG: no status guard, an idle connection can be released again
         c.status = ConnStatus.IDLE
         return c
 

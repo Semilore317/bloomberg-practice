@@ -15,9 +15,7 @@ public:
         subs_[id]=Subscription{id,user,SubStatus::TRIAL,clock_()+ttl_,true}; return subs_[id];
     }
     Subscription& activate(const std::string& id){
-        // BUG: does not clean up expiry first, so an expired trial can still be activated
         Subscription& s=get(id);
-        // BUG: no guard against reactivating a cancelled subscription
         s.status=SubStatus::ACTIVE; s.has_expiry=false; return s;
     }
     Subscription& suspend(const std::string& id){
@@ -32,11 +30,9 @@ public:
     }
     Subscription& cancel(const std::string& id){
         Subscription& s=get(id);
-        // BUG: no terminal-state guard, a cancelled subscription can be cancelled again
         s.status=SubStatus::CANCELLED; s.has_expiry=false; return s;
     }
     bool is_entitled(const std::string& id){
-        // BUG: does not clean up expiry, so an expired trial still reads as entitled
         Subscription& s=get(id);
         if(s.status==SubStatus::ACTIVE) return true;
         if(s.status==SubStatus::TRIAL) return true;

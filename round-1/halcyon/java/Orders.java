@@ -15,20 +15,17 @@ public class Orders {
     public Order fill(String id, int qty){
         Order o=get(id);
         if(qty<=0) throw new IllegalArgumentException("fill qty");
-        // BUG: no status guard; BUG: no overfill guard
         o.filled+=qty;
         o.status = (o.filled==o.qty)?OrderStatus.FILLED:OrderStatus.PARTIAL;
         return o;
     }
     public Order cancel(String id){
         Order o=get(id);
-        // BUG: no terminal guard
         o.status=OrderStatus.CANCELLED; return o;
     }
     public int remaining(String id){ Order o=get(id); return o.qty-o.filled; }
     public int openQtyFor(String symbol){
         int s=0;
-        // BUG: no status filter
         for(Order o: orders.values()) if(o.symbol.equals(symbol)) s+=o.qty-o.filled;
         return s;
     }

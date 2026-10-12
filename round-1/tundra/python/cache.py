@@ -35,10 +35,7 @@ class LRUCache:
         e = self._data.get(key)
         if e is None:
             return None
-        # BUG: no expiry check, an expired entry is still returned
-        # BUG: does not mark the key as recently used, so LRU order is wrong
         return e.value
 
     def size(self) -> int:
-        # BUG: counts expired entries that have not been purged yet
         return len(self._data)

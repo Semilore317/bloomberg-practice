@@ -54,7 +54,6 @@ class InventoryService:
         return r
 
     def commit(self, reservation_id: str) -> Reservation:
-        # BUG: does not clean up expiry first, so an expired hold still looks HELD
         r = self._get(reservation_id)
         if r.status != ResStatus.HELD:
             raise ValueError("only held reservations can be committed")
@@ -64,14 +63,12 @@ class InventoryService:
 
     def release(self, reservation_id: str) -> Reservation:
         r = self._get(reservation_id)
-        # BUG: no status guard, a released or committed reservation can be released again
         self._available[r.sku] += r.qty
         r.status = ResStatus.RELEASED
         r.expires_at = None
         return r
 
     def reserved_units(self, sku: str) -> int:
-        # BUG: no cleanup, so expired holds still count as reserved
         return self._capacity[sku] - self._available[sku]
 
     def _get(self, reservation_id: str) -> Reservation:

@@ -10,7 +10,6 @@ public class Wallet {
     public int balance(String acct){ return require(acct); }
     public int available(String acct){
         int bal=require(acct);
-        // BUG: ignores active holds
         return bal;
     }
     public Hold authorize(String acct,int cents){
@@ -21,12 +20,10 @@ public class Wallet {
     }
     public Hold capture(String id){
         Hold h=get(id);
-        // BUG: no status guard
         balance.put(h.accountId, balance.get(h.accountId)-h.amount); h.status=HoldStatus.CAPTURED; return h;
     }
     public Hold voidHold(String id){
         Hold h=get(id);
-        // BUG: no status guard
         h.status=HoldStatus.VOIDED; return h;
     }
     public Hold get(String id){ Hold h=holds.get(id); if(h==null) throw new IllegalArgumentException("hold not found"); return h; }

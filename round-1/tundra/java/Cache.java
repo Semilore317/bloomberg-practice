@@ -16,11 +16,9 @@ public class Cache {
     public Integer get(String key){
         Entry e = data.get(key);
         if(e == null) return null;
-        // BUG: no expiry check; BUG: does not mark the key recently used
         return e.value;
     }
     public int size(){
-        // BUG: counts expired entries
         return data.size();
     }
 }

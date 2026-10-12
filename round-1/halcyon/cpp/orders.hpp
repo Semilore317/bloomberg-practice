@@ -25,22 +25,18 @@ public:
     Order& fill(const std::string& id, int qty) {
         Order& o = get(id);
         if (qty <= 0) throw std::invalid_argument("fill qty must be positive");
-        // BUG: no status guard, a cancelled (or filled) order can still be filled
-        // BUG: no overfill guard, filled may exceed the original qty
         o.filled += qty;
         o.status = (o.filled == o.qty) ? OrderStatus::FILLED : OrderStatus::PARTIAL;
         return o;
     }
     Order& cancel(const std::string& id) {
         Order& o = get(id);
-        // BUG: no terminal-state guard, a cancelled/filled order can be cancelled again
         o.status = OrderStatus::CANCELLED;
         return o;
     }
     int remaining(const std::string& id) { Order& o = get(id); return o.qty - o.filled; }
     int open_qty_for(const std::string& symbol) {
         int s = 0;
-        // BUG: does not filter by status, so cancelled orders still count as open
         for (auto& kv : orders_) if (kv.second.symbol == symbol) s += kv.second.qty - kv.second.filled;
         return s;
     }

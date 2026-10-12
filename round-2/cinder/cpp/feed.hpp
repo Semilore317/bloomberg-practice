@@ -8,7 +8,7 @@
 struct Quote { std::string symbol; long bid, ask, seq; };
 struct QuoteStore {
     std::map<std::string, Quote> quotes;
-    void apply(const Quote& q) { quotes[q.symbol] = q; }          // BUG: no sequence guard, accepts stale
+    void apply(const Quote& q) { quotes[q.symbol] = q; }
     std::optional<Quote> get(const std::string& s) {
         auto it = quotes.find(s);
         if (it == quotes.end()) return std::nullopt;
@@ -24,11 +24,11 @@ struct SubscriptionHub {
     }
     void unsubscribe(const std::string& sym, int token) {
         std::vector<Sub> keep;
-        for (auto& s : subs[sym]) if (s.token == token) keep.push_back(s);  // BUG: inverted, keeps the one removed
+        for (auto& s : subs[sym]) if (s.token == token) keep.push_back(s);
         subs[sym] = keep;
     }
     void publish(const std::string& sym, const Quote& q) {
-        for (auto& s : subs[sym]) s.cb(q);                        // BUG: no isolation, one throw kills the fanout
+        for (auto& s : subs[sym]) s.cb(q);
     }
 };
 struct MarketDataFeed {
@@ -37,7 +37,7 @@ struct MarketDataFeed {
     void apply_snapshot(const Quote& q) { store.apply(q); }
     void apply_delta(const std::string& sym, long seq, long bid, long ask) {
         auto cur = store.get(sym);
-        long b = cur ? cur->bid : 0;                              // BUG: fabricates a 0/0 base instead of raising
+        long b = cur ? cur->bid : 0;
         long a = cur ? cur->ask : 0;
         store.apply({sym, bid ? bid : b, ask ? ask : a, seq});
     }

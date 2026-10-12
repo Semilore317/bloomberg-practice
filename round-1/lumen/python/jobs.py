@@ -37,14 +37,12 @@ class JobQueue:
 
     def start(self, job_id: str) -> Job:
         job = self._get(job_id)
-        # BUG: no state guard, a running or finished job can be started again
         job.status = JobStatus.RUNNING
         job.attempts += 1
         return job
 
     def complete(self, job_id: str) -> Job:
         job = self._get(job_id)
-        # BUG: no state guard, a job that is not running can be completed
         job.status = JobStatus.DONE
         return job
 
@@ -52,7 +50,6 @@ class JobQueue:
         job = self._get(job_id)
         if job.status != JobStatus.RUNNING:
             raise ValueError("only running jobs can fail")
-        # BUG: off-by-one, allows one retry past the attempt budget
         if job.attempts <= self._max:
             job.status = JobStatus.QUEUED
         else:

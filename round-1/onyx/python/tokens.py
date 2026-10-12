@@ -39,20 +39,17 @@ class TokenStore:
         tok = self._tokens.get(token_id)
         if tok is None:
             return False
-        # BUG: ignores expiry, so an expired token still validates
         return tok.status == TokenStatus.ACTIVE
 
     def refresh(self, token_id: str) -> Token:
         tok = self._get(token_id)
         if tok.status != TokenStatus.ACTIVE:
             raise ValueError("cannot refresh a revoked token")
-        # BUG: does not check expiry, so an expired token can be refreshed back to life
         tok.expires_at = self._clock() + self._ttl
         return tok
 
     def revoke(self, token_id: str) -> Token:
         tok = self._get(token_id)
-        # BUG: no terminal guard, a revoked token can be revoked again
         tok.status = TokenStatus.REVOKED
         tok.expires_at = None
         return tok

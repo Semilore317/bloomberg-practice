@@ -16,7 +16,7 @@ struct CalendarEvent { std::string event_id; long start, end; bool is_protected;
 struct Database {
     std::vector<MeetingRequest> requests;
     void insert_request(const MeetingRequest& r) {
-        requests.push_back(r);                        // BUG: no uniqueness on (requester_key, idempotency_key)
+        requests.push_back(r);
     }
     MeetingRequest* get(const std::string& id) {
         for (auto& r : requests) if (r.request_id == id) return &r;
@@ -25,14 +25,14 @@ struct Database {
     void set_status(const std::string& id, Status s) { if (auto* r = get(id)) r->status = s; }
 };
 inline std::pair<long,long> score(const MeetingRequest& r) {
-    return {r.submitted_at, 0};                       // BUG: ignores business tier entirely
+    return {r.submitted_at, 0};
 }
 inline bool overlaps(long a0, long a1, long b0, long b1) { return a0 < b1 && b0 < a1; }
 inline std::vector<MeetingRequest> schedule_batch(std::vector<MeetingRequest> reqs,
                                                   const std::vector<CalendarEvent>& events) {
     std::sort(reqs.begin(), reqs.end(),
               [](const MeetingRequest& a, const MeetingRequest& b) { return score(a) > score(b); });
-    std::vector<std::pair<long,long>> booked;         // BUG: does not seed protected events, so they get overbooked
+    std::vector<std::pair<long,long>> booked;
     (void)events;
     std::vector<MeetingRequest> scheduled;
     for (auto& r : reqs) {
@@ -47,6 +47,6 @@ inline std::vector<MeetingRequest> schedule_batch(std::vector<MeetingRequest> re
 struct SchedulingService {
     Database& db;
     explicit SchedulingService(Database& d) : db(d) {}
-    void accept(const std::string& id) { db.set_status(id, ACCEPTED); }  // BUG: no terminal-state guard
+    void accept(const std::string& id) { db.set_status(id, ACCEPTED); }
     void reject(const std::string& id) { db.set_status(id, REJECTED); }
 };

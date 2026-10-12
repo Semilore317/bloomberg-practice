@@ -4,7 +4,7 @@ public class Feed {
     public static class Quote { public String symbol; public long bid, ask, seq; public Quote(String s,long b,long a,long q){symbol=s;bid=b;ask=a;seq=q;} }
     public static class QuoteStore {
         Map<String,Quote> quotes = new HashMap<>();
-        public void apply(Quote q){ quotes.put(q.symbol, q); }                 // BUG no seq guard
+        public void apply(Quote q){ quotes.put(q.symbol, q); }
         public Quote get(String s){ return quotes.get(s); }
     }
     public static class SubscriptionHub {
@@ -14,11 +14,11 @@ public class Feed {
         public int subscribe(String sym, Consumer<Quote> cb){ int t=++counter; subs.computeIfAbsent(sym,k->new ArrayList<>()).add(new Sub(t,cb)); return t; }
         public void unsubscribe(String sym, int token){
             List<Sub> keep = new ArrayList<>();
-            for(Sub s: subs.getOrDefault(sym, new ArrayList<>())) if(s.token==token) keep.add(s);  // BUG inverted
+            for(Sub s: subs.getOrDefault(sym, new ArrayList<>())) if(s.token==token) keep.add(s);
             subs.put(sym, keep);
         }
         public void publish(String sym, Quote q){
-            for(Sub s: subs.getOrDefault(sym, new ArrayList<>())) s.cb.accept(q);                   // BUG no isolation
+            for(Sub s: subs.getOrDefault(sym, new ArrayList<>())) s.cb.accept(q);
         }
     }
     public static class MarketDataFeed {
@@ -27,7 +27,7 @@ public class Feed {
         public void applySnapshot(Quote q){ store.apply(q); }
         public void applyDelta(String sym, long seq, long bid, long ask){
             Quote cur = store.get(sym);
-            long b = cur!=null ? cur.bid : 0;                                  // BUG fabricates base
+            long b = cur!=null ? cur.bid : 0;
             long a = cur!=null ? cur.ask : 0;
             store.apply(new Quote(sym, bid!=0?bid:b, ask!=0?ask:a, seq));
         }

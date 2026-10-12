@@ -12,12 +12,12 @@ struct OrchestrationService {
     void enqueue(const std::string& j) { attempts[j] = 0; ready.push_back(j); }
     std::optional<std::string> dequeue() {
         if (ready.empty()) return std::nullopt;
-        return ready.front();                       // BUG: peeks, does not remove
+        return ready.front();
     }
-    void ack(const std::string&) {}                 // BUG: does not remove the job
+    void ack(const std::string&) {}
     void nack(const std::string& j) {
         for (size_t i = 0; i < ready.size(); ++i) if (ready[i] == j) { ready.erase(ready.begin() + i); break; }
-        if (attempts[j] > max_retries) dead.push_back(j);   // BUG: no attempts++, and > should be >=
+        if (attempts[j] > max_retries) dead.push_back(j);
         else ready.push_back(j);
     }
     std::vector<std::string> dead_letters() { return dead; }

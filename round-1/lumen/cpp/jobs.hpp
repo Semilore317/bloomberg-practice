@@ -11,18 +11,15 @@ public:
     Job& enqueue(const std::string& payload){ std::string id="J"+std::to_string(++seq_); jobs_[id]=Job{id,payload,JobStatus::QUEUED,0}; return jobs_[id]; }
     Job& start(const std::string& id){
         Job& j=get(id);
-        // BUG: no state guard, a running or finished job can be started again
         j.status=JobStatus::RUNNING; j.attempts++; return j;
     }
     Job& complete(const std::string& id){
         Job& j=get(id);
-        // BUG: no state guard, a job that is not running can be completed
         j.status=JobStatus::DONE; return j;
     }
     Job& fail(const std::string& id){
         Job& j=get(id);
         if(j.status!=JobStatus::RUNNING) throw std::invalid_argument("only running jobs can fail");
-        // BUG: off-by-one, allows one retry past the attempt budget
         if(j.attempts<=max_) j.status=JobStatus::QUEUED; else j.status=JobStatus::FAILED;
         return j;
     }

@@ -8,18 +8,18 @@ struct OrderBook {
     std::vector<Resting> asks, bids;
     long seq = 0;
     long next_seq() { return ++seq; }
-    void cancel(const std::string&) {}                    // BUG: no-op
+    void cancel(const std::string&) {}
     std::vector<Trade> limit(const std::string& order_id, const std::string& side, long price, long qty) {
         std::vector<Trade> trades;
         if (side == "buy") {
-            std::sort(asks.begin(), asks.end(), [](const Resting& a, const Resting& b) { return a.price != b.price ? a.price < b.price : a.seq > b.seq; }); // BUG: -seq breaks FIFO
+            std::sort(asks.begin(), asks.end(), [](const Resting& a, const Resting& b) { return a.price != b.price ? a.price < b.price : a.seq > b.seq; });
             size_t i = 0;
             while (qty > 0 && i < asks.size()) {
                 if (asks[i].price <= price) {
                     long fill = std::min(qty, asks[i].qty);
                     trades.push_back({asks[i].order_id, order_id, asks[i].price, fill});
                     qty -= fill;
-                    asks.erase(asks.begin() + i);          // BUG: removes whole resting order on partial fill
+                    asks.erase(asks.begin() + i);
                 } else break;
             }
             if (qty > 0) bids.push_back({order_id, "buy", price, qty, next_seq()});

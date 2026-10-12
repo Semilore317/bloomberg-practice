@@ -13,7 +13,6 @@ public:
     int balance(const std::string& acct){ return require(acct); }
     int available(const std::string& acct){
         int bal=require(acct);
-        // BUG: ignores active holds, so reserved funds still look available
         return bal;
     }
     Hold& authorize(const std::string& acct, int cents){
@@ -25,12 +24,10 @@ public:
     }
     Hold& capture(const std::string& id){
         Hold& h=get(id);
-        // BUG: no status guard, a voided (or captured) hold can be captured
         balance_[h.account_id]-=h.amount; h.status=HoldStatus::CAPTURED; return h;
     }
     Hold& voidHold(const std::string& id){
         Hold& h=get(id);
-        // BUG: no status guard, a captured (or voided) hold can be voided again
         h.status=HoldStatus::VOIDED; return h;
     }
     Hold& get(const std::string& id){ auto it=holds_.find(id); if(it==holds_.end()) throw std::invalid_argument("hold not found"); return it->second; }

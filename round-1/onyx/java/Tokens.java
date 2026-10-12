@@ -10,18 +10,15 @@ public class Tokens {
     public Token issue(String user){ String id="T"+(++seq); Token t=new Token(id,user,clock.getAsDouble()+ttl); tokens.put(id,t); return t; }
     public boolean validate(String id){
         Token t=tokens.get(id); if(t==null) return false;
-        // BUG: ignores expiry
         return t.status==TokenStatus.ACTIVE;
     }
     public Token refresh(String id){
         Token t=get(id);
         if(t.status!=TokenStatus.ACTIVE) throw new IllegalArgumentException("cannot refresh a revoked token");
-        // BUG: does not check expiry
         t.expiresAt=clock.getAsDouble()+ttl; return t;
     }
     public Token revoke(String id){
         Token t=get(id);
-        // BUG: no terminal guard
         t.status=TokenStatus.REVOKED; t.hasExpiry=false; return t;
     }
     public Token get(String id){ Token t=tokens.get(id); if(t==null) throw new IllegalArgumentException("token not found"); return t; }

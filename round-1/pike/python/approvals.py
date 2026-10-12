@@ -35,7 +35,6 @@ class ApprovalService:
 
     def approve(self, doc_id: str) -> Document:
         doc = self._get(doc_id)
-        # BUG: no state guard, a rejected/withdrawn/approved doc can be approved
         doc.status = DocStatus.APPROVED
         return doc
 
@@ -48,7 +47,6 @@ class ApprovalService:
 
     def withdraw(self, doc_id: str) -> Document:
         doc = self._get(doc_id)
-        # BUG: no state guard, a document can be withdrawn after it is decided
         doc.status = DocStatus.WITHDRAWN
         return doc
 
@@ -56,7 +54,6 @@ class ApprovalService:
         return self._get(doc_id).status
 
     def pending_count(self) -> int:
-        # BUG: counts every document, not only the pending ones
         return len(self._docs)
 
     def _get(self, doc_id: str) -> Document:

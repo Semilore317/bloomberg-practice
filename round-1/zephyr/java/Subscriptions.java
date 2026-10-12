@@ -9,18 +9,15 @@ public class Subscriptions {
     public Subscriptions(double ttl, DoubleSupplier clock){ this.ttl=ttl; this.clock=clock; }
     public Subscription startTrial(String user){ String id="S"+(++seq); Subscription s=new Subscription(id,user,clock.getAsDouble()+ttl); subs.put(id,s); return s; }
     public Subscription activate(String id){
-        // BUG: no cleanup first; BUG: no cancelled guard
         Subscription s=get(id); s.status=SubStatus.ACTIVE; s.hasExpiry=false; return s;
     }
     public Subscription suspend(String id){ Subscription s=get(id); if(s.status!=SubStatus.ACTIVE) throw new IllegalArgumentException("only active"); s.status=SubStatus.SUSPENDED; return s; }
     public Subscription resume(String id){ Subscription s=get(id); if(s.status!=SubStatus.SUSPENDED) throw new IllegalArgumentException("only suspended"); s.status=SubStatus.ACTIVE; return s; }
     public Subscription cancel(String id){
         Subscription s=get(id);
-        // BUG: no terminal guard
         s.status=SubStatus.CANCELLED; s.hasExpiry=false; return s;
     }
     public boolean isEntitled(String id){
-        // BUG: no cleanup
         Subscription s=get(id);
         if(s.status==SubStatus.ACTIVE) return true;
         if(s.status==SubStatus.TRIAL) return true;

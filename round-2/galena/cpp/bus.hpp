@@ -11,13 +11,13 @@ struct MessageBus {
     }
     void unsubscribe(int token) {
         std::vector<Subscription> keep;
-        for (auto& s : subs) if (s.pattern != std::to_string(token)) keep.push_back(s);   // BUG: compares pattern to token
+        for (auto& s : subs) if (s.pattern != std::to_string(token)) keep.push_back(s);
         subs = keep;
     }
     bool matches(const std::string& pattern, const std::string& topic) const {
-        return pattern == topic;                                                          // BUG: no wildcard support
+        return pattern == topic;
     }
     void publish(const std::string& topic, const std::string& msg) {
-        for (auto& s : subs) if (matches(s.pattern, topic)) s.cb(msg);                     // BUG: no isolation
+        for (auto& s : subs) if (matches(s.pattern, topic)) s.cb(msg);
     }
 };

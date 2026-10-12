@@ -24,12 +24,9 @@ public:
     std::pair<bool,int> get(const std::string& key){
         auto it = idx_.find(key);
         if(it == idx_.end()) return {false, 0};
-        // BUG: no expiry check, an expired entry is still returned
-        // BUG: does not mark the key as recently used, so LRU order is wrong
         return {true, it->second->second.value};
     }
     int size(){
-        // BUG: counts expired entries that have not been purged yet
         return (int)order_.size();
     }
 };

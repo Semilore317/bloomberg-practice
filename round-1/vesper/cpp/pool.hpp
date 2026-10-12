@@ -9,15 +9,12 @@ class ConnectionPool {
 public:
     explicit ConnectionPool(int capacity): capacity_(capacity) {}
     Connection& acquire(){
-        // BUG: does not check whether the pool is closed
         for(auto& kv:conns_) if(kv.second.status==ConnStatus::IDLE){ kv.second.status=ConnStatus::IN_USE; return kv.second; }
-        // BUG: does not enforce capacity, so the pool can exceed its size
         std::string id="C"+std::to_string(++seq_);
         conns_[id]=Connection{id,ConnStatus::IN_USE}; return conns_[id];
     }
     Connection& release(const std::string& id){
         Connection& c=get(id);
-        // BUG: no status guard, an idle connection can be released again
         c.status=ConnStatus::IDLE; return c;
     }
     void close(){ closed_=true; }

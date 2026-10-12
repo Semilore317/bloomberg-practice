@@ -5,15 +5,15 @@ public class Matching {
     List<Resting> asks=new ArrayList<>(), bids=new ArrayList<>();
     long seq=0;
     long nextSeq(){ return ++seq; }
-    public void cancel(String orderId){}                       // BUG
+    public void cancel(String orderId){}
     public List<Trade> limit(String orderId, String side, long price, long qty){
         List<Trade> trades=new ArrayList<>();
         if(side.equals("buy")){
-            asks.sort((a,b)-> a.price!=b.price ? Long.compare(a.price,b.price) : Long.compare(b.seq,a.seq)); // BUG -seq
+            asks.sort((a,b)-> a.price!=b.price ? Long.compare(a.price,b.price) : Long.compare(b.seq,a.seq));
             int i=0;
             while(qty>0 && i<asks.size()){
                 Resting r=asks.get(i);
-                if(r.price<=price){ long fill=Math.min(qty,r.qty); trades.add(new Trade(r.orderId,orderId,r.price,fill)); qty-=fill; asks.remove(i); } // BUG remove whole
+                if(r.price<=price){ long fill=Math.min(qty,r.qty); trades.add(new Trade(r.orderId,orderId,r.price,fill)); qty-=fill; asks.remove(i); }
                 else break;
             }
             if(qty>0) bids.add(new Resting(orderId,"buy",price,qty,nextSeq()));

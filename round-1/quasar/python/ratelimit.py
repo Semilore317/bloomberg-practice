@@ -24,7 +24,6 @@ class RateLimiter:
     def allow(self, key: str) -> bool:
         now = self._clock()
         st = self._state.get(key)
-        # BUG: only starts a window when there is none, never rolls an elapsed one
         if st is None:
             st = _Window(now, 0)
             self._state[key] = st
@@ -35,11 +34,9 @@ class RateLimiter:
 
     def remaining(self, key: str) -> int:
         st = self._state.get(key)
-        # BUG: does not account for an elapsed window, so the count reads stale
         if st is None:
             return self._limit
         return self._limit - st.count
 
     def reset(self, key: str) -> None:
-        # BUG: does not actually clear the key's window
         pass

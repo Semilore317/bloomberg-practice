@@ -37,7 +37,6 @@ class WalletService:
 
     def available(self, account_id: str) -> int:
         bal = self._require(account_id)
-        # BUG: ignores active holds, so reserved funds still look available
         return bal
 
     def authorize(self, account_id: str, cents: int) -> Hold:
@@ -54,14 +53,12 @@ class WalletService:
 
     def capture(self, hold_id: str) -> Hold:
         h = self._get(hold_id)
-        # BUG: no status guard, a voided (or already captured) hold can be captured
         self._balance[h.account_id] -= h.amount
         h.status = HoldStatus.CAPTURED
         return h
 
     def void(self, hold_id: str) -> Hold:
         h = self._get(hold_id)
-        # BUG: no status guard, a captured (or already voided) hold can be voided again
         h.status = HoldStatus.VOIDED
         return h
 
