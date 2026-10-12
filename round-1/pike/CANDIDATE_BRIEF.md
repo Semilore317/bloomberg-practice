@@ -16,17 +16,17 @@ Some requirements are intentionally incomplete. Treat the interviewer as the
 project manager: ask clarifying questions where behaviour is ambiguous (there is
 a list to start from in `PROJECT_MANAGER_NOTES.md`).
 
-You may inspect the source, run and add tests, and modify the implementation. The
-same system exists in Python, C++, and Java; pick one (see `SETUP.md`). Most of
-the test suite passes. The failing tests are the reported bugs.
+You may inspect the source, modify the implementation, and add your own tests. The
+same system exists in Python, C++, and Java; pick one (see `SETUP.md`).
+
+This pack ships no tests. Reproduce the reported symptom with a test you write,
+confirm your hypothesis, then fix the code and keep your own tests green.
 
 ## Where the code lives
 
 The same system is implemented three times, once per language:
 
 `python/approvals.py` (ApprovalService, Document), `cpp/approvals.hpp`, and `java/Approvals.java`.
-
-Shared tests ship with each language. The acceptance tests are the specification.
 
 ## Be ready to explain
 

@@ -13,5 +13,5 @@ Strong candidates often notice:
 - available should always equal capacity minus held minus committed units
 - lazy expiry cleanup is O(n) over all reservations
 
-If you found and fixed the failing tests and can explain each fix in terms of the
-invariant it protects, you did the exercise well.
+If you reproduced each issue with a test you wrote, fixed it, and can explain each
+fix in terms of the invariant it protects, you did the exercise well.

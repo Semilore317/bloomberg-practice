@@ -11,22 +11,14 @@ You may use the available AI assistant and normal repository tools. Treat the as
 junior developer: establish a plan, inspect its work, run the tests, and retain ownership of the
 result.
 
-## Run the tests
+## Reproduce and test it yourself
 
-This pack has the same problem in three languages (`python/`, `cpp/`, `java/`). Pick one:
+This pack ships no tests. The code is the same in `python/`, `cpp/`, and `java/`;
+pick one (see [SETUP.md](SETUP.md)). Work from the tickets in `tickets/`: for each,
+write a test that reproduces the reported behaviour, confirm it fails, fix the
+code, and keep your own test green.
 
-```bash
-# Python
-cd python && pytest -q
-
-# C++
-cd cpp && make test          # or: g++ -std=c++17 tests.cpp -o tests && ./tests
-
-# Java
-cd java && javac *.java && java Tests
-```
-
-All three implement the same spec and the same planted bugs; every test fails until you fix them.
+## Repository map
 
 ## Repository map
 

@@ -1,23 +1,35 @@
 # Contributing
 
-Thanks for adding to the question bank. Each "pack" is a self-contained practice codebase with
-deliberately planted bugs. Keep the contract for its round and new packs will fit right in.
+Thanks for adding to the question bank. Each "pack" is a self-contained practice codebase
+with deliberately planted bugs and **no tests**. The candidate writes the tests; you ship
+the broken code and the story around it. Keep that contract and new packs will fit right in.
 
 ## The two round shapes
 
-- `round-1/<codename>/` — **mostly green**. One stateful domain object with a clear lifecycle.
-  Most tests pass; **3 to 5 planted bugs** fail. This mirrors the real Bloomberg round, where you
-  join a mostly-working service and debug it. Target ~35 minutes.
-- `round-2/<codename>/` — **all red**. A larger multi-module microservice where **every test fails
-  by default**, tuned harder than the real round. Target ~45 minutes.
+- `round-1/<codename>/` — one stateful domain object with a clear lifecycle and **3 to 5
+  planted bugs**. Target ~35 minutes.
+- `round-2/<codename>/` — a larger multi-module microservice with more bugs and a ticket
+  backlog. Target ~45 minutes.
 
-Use a **codename** that reveals nothing about the domain (for example `halcyon`, `kestrel`). The
-documents tell the story; the folder name does not.
+Use a **codename** that reveals nothing about the domain (for example `halcyon`, `kestrel`).
+The documents tell the story; the folder name does not.
+
+## No shipped tests
+
+Packs do not ship tests. This is deliberate: confirming a bug with a test you wrote is the
+skill being practised. What a pack ships instead:
+
+- the implementation, with the bugs in it, one folder per language;
+- a `conftest.py` in each `python/` so a candidate's own `test_*.py` imports the module;
+- the story: round 1 ships `CANDIDATE_BRIEF.md` with the reported symptom, round 2 ships
+  `tickets/` with one reported problem each.
+
+There is **no solution file** and **no test file** in the repository. You verify the pack
+with a private holdout suite (next section) that you keep out of the repo.
 
 ## Languages and layout
 
-A pack is implemented three times with the **same spec and the same planted bugs**, one folder per
-language. The documents differ by round:
+A pack is implemented three times with the **same bugs**, one folder per language.
 
 ```text
 round-1/<codename>/                       round-2/<codename>/
@@ -28,65 +40,57 @@ round-1/<codename>/                       round-2/<codename>/
   python/  cpp/  java/
 ```
 
-- **python/** — module(s) plus `tests/` (pytest) and a `conftest.py` that puts the pack on the path.
-- **cpp/** — header-only implementation (`.hpp`), `tests.cpp`, and a `Makefile` (`make test`).
-- **java/** — the classes plus `Tests.java` with a `main` that runs the checks.
+- **python/** — the module(s) plus a `conftest.py` that puts the pack on the path. No tests.
+- **cpp/** — a header-only implementation (`.hpp`). No test file and no Makefile; a candidate
+  writes `test.cpp`.
+- **java/** — the classes only. No `Tests.java`; a candidate writes `Check.java`.
 
-There is **no SOLUTION file** anywhere. The acceptance tests are the answer key. Round 1 ships a
-`SELF_REVIEW_AFTER.md`, but that is a list of symptoms to notice after the exercise, not corrected
-code.
+## Verify with a private holdout (do not commit it)
 
-### Test runners (dependency-free on purpose)
-
-- **Python:** `cd python && pytest -q`.
-- **C++:** `cd cpp && make test` (compiles `tests.cpp` with `g++ -std=c++17` and runs it). The
-  runner prints `PASS`/`FAIL` per check and exits non-zero while any check fails.
-- **Java:** `cd java && javac *.java && java Tests`. `Tests.java` runs checks and calls
-  `System.exit(1)` while any fail.
-
-In every language the runner exits zero only when all checks pass, so "all green" means the same
-thing everywhere.
+Write a full acceptance suite while you build the pack, in all three languages, and use it to
+prove two things: every planted bug is independently reproducible with a failing test, and
+applying the intended fix turns the whole suite green. Then delete it, or keep it somewhere
+outside the repo. It is your answer key, not part of the pack.
 
 ## The rules (please keep these)
 
-1. **The right shipped split.** Round 1 ships mostly green with 3 to 5 failing tests. Round 2 ships
-   all red. Verify the shipped split in **every language** before you submit.
-2. **Each failing test isolates one bug**, for one clear reason.
-3. **Fixable to green.** After the intended fixes, the whole suite passes in all three languages.
-4. **Realistic lifecycle bugs.** Missing state guards, idempotency gaps, off-by-ones at a boundary,
-   stale reads that skip expiry cleanup, broken invariants. No syntax errors or obviously broken
-   code.
-5. **No external dependencies, services, API keys, or network calls.** Standard library only (plus
-   `pytest` for Python).
-6. **Integer money.** If a pack handles money, use integer cents; no floats in a ledger.
-7. **Determinism.** Anything time-based takes an injected clock, so TTL and expiry tests are exact.
+1. **Bugs that a written test can catch.** Each planted bug must be reproducible by a small,
+   obvious test a candidate could write from the symptom. If you cannot write that test, the
+   bug is too obscure.
+2. **Fixable cleanly.** The intended fix is the narrowest change that restores the invariant,
+   in all three languages.
+3. **Realistic lifecycle bugs.** Missing state guards, idempotency gaps, off-by-ones at a
+   boundary, stale reads that skip expiry cleanup, broken invariants. No syntax errors and no
+   giveaway comments in the code.
+4. **No external dependencies, services, API keys, or network calls.** Standard library only.
+5. **Integer money.** If a pack handles money, use integer cents; no floats in a ledger.
+6. **Determinism.** Anything time-based takes an injected clock, so a candidate's expiry tests
+   are exact.
+7. **Shipped code must compile and import on its own**, with no test files present.
 
 ## Round 1 document set
 
-- `CANDIDATE_BRIEF.md` — "You are joining an existing project late in development", the system, the
-  intended lifecycle, where the code lives, and a **be-ready-to-explain** list (invariants, state
-  transitions, idempotency, complexity, the concurrent/distributed version).
-- `PROJECT_MANAGER_NOTES.md` — the clarifying questions a strong candidate asks. The interviewer
-  plays the project manager, so some answers are judgement calls.
-- `SELF_REVIEW_AFTER.md` — what strong candidates notice, read after the exercise. Symptoms, not a
-  patch.
-- `SETUP.md` — how to run each language.
+- `CANDIDATE_BRIEF.md` — "You are joining an existing project late in development", the system,
+  the intended lifecycle, the **reported symptom** (not a bug location), where the code lives,
+  and a be-ready-to-explain list (invariants, state transitions, idempotency, complexity, the
+  concurrent/distributed version).
+- `PROJECT_MANAGER_NOTES.md` — the clarifying questions a strong candidate asks. The
+  interviewer plays the project manager, so some answers are judgement calls.
+- `SELF_REVIEW_AFTER.md` — what strong candidates notice, read after the exercise. Symptoms,
+  not a patch.
+- `SETUP.md` — how to run the tests the candidate writes, in each language.
 
 ## Round 2 document set
 
-- `README.md` — "Welcome to the team that ...", a run section, a repository map, and the product
-  rules as bullets.
-- `tickets/` — one `.md` per reported problem: a Report, Acceptance criteria, and a scope boundary.
-- `SETUP.md` — how to run each language.
-
-## Before you submit: verify the pack
-
-For each language, the shipped pack must show the correct split (mostly green for round 1, all red
-for round 2) and must go to all green once the intended fixes are applied. A pack that cannot make
-that round trip is not ready. Keep the fixes out of the repository.
+- `README.md` — "Welcome to the team that ...", a repository map, the product rules as
+  bullets, and a note that the candidate writes the tests.
+- `tickets/` — one `.md` per reported problem: a Report, Acceptance criteria, and a scope
+  boundary. The tickets are the symptoms; they do not name the buggy line.
+- `SETUP.md` — how to run the tests the candidate writes, in each language.
 
 ## Opening a change
 
-Create a branch, add your pack (or language port), and open a pull request. In the PR description
-(not in the repo), list the codename, the round, the languages, and the planted bugs, and confirm
-the suite makes the red-to-green round trip. Keep the solution out of the repository.
+Create a branch, add your pack (or language port), and open a pull request. In the PR
+description (not in the repo), list the codename, the round, the languages, the planted bugs,
+and confirm that your private holdout went red-to-green in all three. Keep the holdout and any
+solution out of the repository.

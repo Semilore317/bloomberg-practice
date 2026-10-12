@@ -13,5 +13,5 @@ Strong candidates often notice:
 - the count is shared mutable state; concurrent allow calls would race
 - a sliding-window version needs per-timestamp tracking, not a single counter
 
-If you found and fixed the failing tests and can explain each fix in terms of the
-invariant it protects, you did the exercise well.
+If you reproduced each issue with a test you wrote, fixed it, and can explain each
+fix in terms of the invariant it protects, you did the exercise well.

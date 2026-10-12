@@ -13,5 +13,5 @@ Strong candidates often notice:
 - a double release inflates the idle count above capacity
 - a real pool would need locking around acquire and release
 
-If you found and fixed the failing tests and can explain each fix in terms of the
-invariant it protects, you did the exercise well.
+If you reproduced each issue with a test you wrote, fixed it, and can explain each
+fix in terms of the invariant it protects, you did the exercise well.

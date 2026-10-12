@@ -13,5 +13,5 @@ Strong candidates often notice:
 - ACTIVE and unexpired TRIAL are entitled; everything else is not
 - EXPIRED and CANCELLED are terminal and distinct
 
-If you found and fixed the failing tests and can explain each fix in terms of the
-invariant it protects, you did the exercise well.
+If you reproduced each issue with a test you wrote, fixed it, and can explain each
+fix in terms of the invariant it protects, you did the exercise well.

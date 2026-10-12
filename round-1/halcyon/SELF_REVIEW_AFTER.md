@@ -13,5 +13,5 @@ Strong candidates often notice:
 - the invariant 0 <= filled <= qty should always hold
 - OPEN and PARTIAL consume open quantity; FILLED and CANCELLED do not
 
-If you found and fixed the failing tests and can explain each fix in terms of the
-invariant it protects, you did the exercise well.
+If you reproduced each issue with a test you wrote, fixed it, and can explain each
+fix in terms of the invariant it protects, you did the exercise well.

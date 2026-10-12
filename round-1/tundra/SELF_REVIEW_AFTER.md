@@ -13,5 +13,5 @@ Strong candidates often notice:
 - a read is a use: it must move the key to most-recently-used
 - eviction removes the least-recently-used entry from the front
 
-If you found and fixed the failing tests and can explain each fix in terms of the
-invariant it protects, you did the exercise well.
+If you reproduced each issue with a test you wrote, fixed it, and can explain each
+fix in terms of the invariant it protects, you did the exercise well.
