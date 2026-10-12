@@ -1,0 +1,24 @@
+import java.util.*;
+import java.util.function.DoubleSupplier;
+public class RateLimit {
+    static class Window { double start; int count; Window(double s,int c){start=s;count=c;} }
+    private final int limit; private final double window; private final DoubleSupplier clock;
+    private final Map<String,Window> state=new HashMap<>();
+    public RateLimit(int limit,double window,DoubleSupplier clock){ this.limit=limit; this.window=window; this.clock=clock; }
+    public boolean allow(String key){
+        double now=clock.getAsDouble(); Window w=state.get(key);
+        // BUG: only starts a window when there is none, never rolls an elapsed one
+        if(w==null){ w=new Window(now,0); state.put(key,w); }
+        if(w.count<limit){ w.count++; return true; }
+        return false;
+    }
+    public int remaining(String key){
+        Window w=state.get(key);
+        // BUG: does not account for an elapsed window
+        if(w==null) return limit;
+        return limit - w.count;
+    }
+    public void reset(String key){
+        // BUG: does not actually clear the window
+    }
+}

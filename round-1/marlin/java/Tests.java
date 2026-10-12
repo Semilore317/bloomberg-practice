@@ -1,29 +1,24 @@
 import java.util.*;
-
 public class Tests {
-    static int total = 0, failures = 0;
-    static void check(String n, boolean c) { total++; if (c) System.out.println("PASS " + n); else { failures++; System.out.println("FAIL " + n); } }
-    static void checkThrows(String n, Runnable r) {
-        total++; boolean threw = false;
-        try { r.run(); } catch (RuntimeException e) { threw = true; }
-        if (threw) System.out.println("PASS " + n); else { failures++; System.out.println("FAIL " + n); }
-    }
-    static Settlement.Fill buy(String t, String s, long q, long p) { return new Settlement.Fill(t, s, "buy", q, p); }
-    static Settlement.Fill sell(String t, String s, long q, long p) { return new Settlement.Fill(t, s, "sell", q, p); }
-
-    public static void main(String[] a) {
-        {
-            Settlement b = Settlement.settle(List.of(buy("1", "AAPL", 10, 10000), buy("1", "AAPL", 10, 10000)));
-            check("duplicate_trade_id_applied_once", b.positions.get("AAPL").quantity == 10);
-        }
-        {
-            Settlement b = Settlement.settle(List.of(buy("1", "AAPL", 10, 10000), buy("2", "AAPL", 10, 20000), sell("3", "AAPL", 10, 18000)));
-            check("realized_pnl_uses_average_cost", b.realizedPnlCents == 30000);
-        }
-        checkThrows("oversell_raises", () -> { new Settlement().apply(sell("1", "AAPL", 5, 10000)); });
-        checkThrows("malformed_fill_raises", () -> { new Settlement().apply(buy("1", "A", 0, 100)); });
-
-        System.out.println((failures > 0 ? "FAILED " : "OK ") + (total - failures) + "/" + total);
-        System.exit(failures > 0 ? 1 : 0);
+    static int total=0, failures=0;
+    static void check(String n, boolean c){ total++; if(c) System.out.println("PASS "+n); else { failures++; System.out.println("FAIL "+n);} }
+    interface R { void run(); }
+    static boolean throwsEx(R r){ try{ r.run(); return false; } catch(RuntimeException e){ return true; } }
+    static class Clk implements java.util.function.DoubleSupplier { double v=1000; public double getAsDouble(){return v;} }
+    static Map<String,Integer> stock(){ Map<String,Integer> m=new HashMap<>(); m.put("A",5); m.put("B",8); return m; }
+    public static void main(String[] a){
+        { Clk c=new Clk(); Inventory s=new Inventory(stock(),60,c); Inventory.Reservation r=s.reserve("A",2); check("reserve_reduces_available", r.status==Inventory.ResStatus.HELD && s.available("A")==3); }
+        { Clk c=new Clk(); Inventory s=new Inventory(stock(),60,c); Inventory.Reservation r=s.reserve("A",2); s.commit(r.reservationId); check("commit_keeps_stock_consumed", s.available("A")==3); }
+        { Clk c=new Clk(); Inventory s=new Inventory(stock(),60,c); Inventory.Reservation r=s.reserve("A",2); s.release(r.reservationId); check("release_restores_stock", s.available("A")==5); }
+        { Clk c=new Clk(); Inventory s=new Inventory(stock(),60,c); Inventory.Reservation r=s.reserve("A",2); s.release(r.reservationId);
+          boolean x=throwsEx(()->s.release(r.reservationId)); Inventory.Reservation r2=s.reserve("A",2); s.commit(r2.reservationId); boolean y=throwsEx(()->s.release(r2.reservationId));
+          check("release_non_held_rejected", x && y && s.available("A")==3); }
+        { Clk c=new Clk(); Inventory s=new Inventory(stock(),60,c); s.reserve("A",2); c.v+=61; check("expired_hold_restores_stock", s.available("A")==5); }
+        { Clk c=new Clk(); Inventory s=new Inventory(stock(),60,c); Inventory.Reservation r=s.reserve("A",2); c.v+=61; check("expired_hold_cannot_be_committed", throwsEx(()->s.commit(r.reservationId))); }
+        { Clk c=new Clk(); Inventory s=new Inventory(stock(),60,c); Inventory.Reservation r=s.reserve("A",2); s.commit(r.reservationId); c.v+=1000; check("committed_survives_ttl", s.available("A")==3 && s.reservedUnits("A")==2); }
+        { Clk c=new Clk(); Inventory s=new Inventory(stock(),60,c); s.reserve("A",2); c.v+=61; check("reserved_units_reflects_expiry", s.reservedUnits("A")==0); }
+        { Clk c=new Clk(); Inventory s=new Inventory(stock(),60,c); check("reserve_rejects_oversell", throwsEx(()->s.reserve("A",6))); }
+        { Clk c=new Clk(); Inventory s=new Inventory(stock(),60,c); s.reserve("A",2); s.reserve("A",1); check("reserve_sums_reduce", s.available("A")==2); }
+        System.out.println((failures>0?"FAILED ":"OK ")+(total-failures)+"/"+total); System.exit(failures>0?1:0);
     }
 }

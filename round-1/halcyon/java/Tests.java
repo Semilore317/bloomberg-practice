@@ -1,40 +1,19 @@
-import java.util.*;
-
 public class Tests {
-    static int total = 0, failures = 0;
-    static void check(String name, boolean cond) {
-        total++;
-        if (cond) System.out.println("PASS " + name);
-        else { failures++; System.out.println("FAIL " + name); }
-    }
-
-    public static void main(String[] args) {
-        check("code_zero_is_five_zeros", new Codes(() -> 0.0).issue("Mina").code.equals("00000"));
-        check("code_preserves_leading_zeros", new Codes(() -> 0.00042).issue("Mina").code.equals("00042"));
-
-        {
-            List<Codes.Entry> e = List.of(new Codes.Entry("Ada", "54321"));
-            Payouts.DrawResult r = Payouts.distribute(e, "12345", Codes::matchCount);
-            boolean ada = false;
-            for (Payouts.Payout p : r.payouts) if (p.participant.equals("Ada")) ada = true;
-            check("match_is_positional", !ada);
-        }
-        {
-            List<Codes.Entry> e = List.of(new Codes.Entry("Win", "12345"), new Codes.Entry("Two", "12000"));
-            Payouts.DrawResult r = Payouts.distribute(e, "12345", Codes::matchCount);
-            long win = -1; boolean two = false;
-            for (Payouts.Payout p : r.payouts) { if (p.participant.equals("Win")) win = p.amountCents; if (p.participant.equals("Two")) two = true; }
-            check("five_match_consumes_pot", win == r.potCents && !two);
-        }
-        {
-            List<Codes.Entry> e = List.of(new Codes.Entry("X", "12000"), new Codes.Entry("Y", "12000"), new Codes.Entry("Z", "12000"));
-            Payouts.DrawResult r = Payouts.distribute(e, "12999", Codes::matchCount);
-            long t2 = 0;
-            for (Payouts.Payout p : r.payouts) if (p.matchCount == 2) t2 += p.amountCents;
-            check("tier_split_conserves_cents", t2 == r.potCents * 5 / 100);
-        }
-
-        System.out.println((failures > 0 ? "FAILED " : "OK ") + (total - failures) + "/" + total);
-        System.exit(failures > 0 ? 1 : 0);
+    static int total=0, failures=0;
+    static void check(String n, boolean c){ total++; if(c) System.out.println("PASS "+n); else { failures++; System.out.println("FAIL "+n);} }
+    interface R { void run(); }
+    static boolean throwsEx(R r){ try{ r.run(); return false; } catch(RuntimeException e){ return true; } }
+    public static void main(String[] a){
+        { Orders s=new Orders(); Orders.Order o=s.place("AAPL","buy",10); check("place_creates_open_order", o.status==Orders.OrderStatus.OPEN && s.remaining(o.orderId)==10); }
+        { Orders s=new Orders(); Orders.Order o=s.place("AAPL","buy",10); s.fill(o.orderId,4); check("partial_fill_sets_partial_and_remaining", o.status==Orders.OrderStatus.PARTIAL && s.remaining(o.orderId)==6); }
+        { Orders s=new Orders(); Orders.Order o=s.place("AAPL","buy",10); s.fill(o.orderId,10); check("full_fill_sets_filled", o.status==Orders.OrderStatus.FILLED && s.remaining(o.orderId)==0); }
+        { Orders s=new Orders(); Orders.Order o=s.place("AAPL","buy",10); s.fill(o.orderId,4); s.fill(o.orderId,6); check("two_fills_accumulate", o.status==Orders.OrderStatus.FILLED); }
+        { Orders s=new Orders(); Orders.Order o=s.place("AAPL","buy",10); check("overfill_rejected", throwsEx(()->s.fill(o.orderId,11))); }
+        { Orders s=new Orders(); Orders.Order o=s.place("AAPL","buy",10); s.cancel(o.orderId); check("fill_cancelled_order_rejected", throwsEx(()->s.fill(o.orderId,1))); }
+        { Orders s=new Orders(); Orders.Order o=s.place("AAPL","buy",10); s.cancel(o.orderId); check("cancel_open_order", o.status==Orders.OrderStatus.CANCELLED); }
+        { Orders s=new Orders(); Orders.Order o=s.place("AAPL","buy",10); s.cancel(o.orderId); check("double_cancel_rejected", throwsEx(()->s.cancel(o.orderId))); }
+        { Orders s=new Orders(); Orders.Order o=s.place("AAPL","buy",10); s.cancel(o.orderId); check("open_qty_excludes_cancelled", s.openQtyFor("AAPL")==0); }
+        { Orders s=new Orders(); Orders.Order x=s.place("AAPL","buy",10); s.place("AAPL","buy",5); s.fill(x.orderId,4); check("open_qty_sums_remaining", s.openQtyFor("AAPL")==11); }
+        System.out.println((failures>0?"FAILED ":"OK ")+(total-failures)+"/"+total); System.exit(failures>0?1:0);
     }
 }

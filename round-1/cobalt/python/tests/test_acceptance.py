@@ -1,13 +1,81 @@
-from stats import moving_average, rolling_max
+import pytest
+from wallet import WalletService, HoldStatus
 
 
-def test_moving_average_basic():
-    assert moving_average([1, 2, 3, 4], 2) == [1.5, 2.5, 3.5]
+def acct():
+    s = WalletService()
+    s.open_account("a1", 500)
+    return s
 
 
-def test_moving_average_full_window():
-    assert moving_average([2, 4, 6], 3) == [4.0]
+def test_open_sets_balance():
+    s = acct()
+    assert s.balance("a1") == 500
+    assert s.available("a1") == 500
 
 
-def test_rolling_max():
-    assert rolling_max([1, 3, 2, 5, 4], 2) == [3, 3, 5, 5]
+def test_authorize_reduces_available():
+    s = acct()
+    s.authorize("a1", 300)
+    assert s.balance("a1") == 500
+    assert s.available("a1") == 200
+
+
+def test_authorize_keeps_balance():
+    s = acct()
+    s.authorize("a1", 300)
+    assert s.balance("a1") == 500
+
+
+def test_capture_reduces_balance():
+    s = acct()
+    h = s.authorize("a1", 300)
+    s.capture(h.hold_id)
+    assert s.balance("a1") == 200
+
+
+def test_capture_frees_hold():
+    s = acct()
+    h = s.authorize("a1", 300)
+    s.capture(h.hold_id)
+    assert s.available("a1") == 200
+
+
+def test_void_restores_available():
+    s = acct()
+    h = s.authorize("a1", 300)
+    s.void(h.hold_id)
+    assert s.available("a1") == 500
+    assert s.balance("a1") == 500
+
+
+def test_void_non_held_rejected():
+    s = acct()
+    h = s.authorize("a1", 300)
+    s.void(h.hold_id)
+    with pytest.raises(ValueError):
+        s.void(h.hold_id)                 # double void
+    h2 = s.authorize("a1", 100)
+    s.capture(h2.hold_id)
+    with pytest.raises(ValueError):
+        s.void(h2.hold_id)                # void a captured hold
+
+
+def test_capture_non_held_rejected():
+    s = acct()
+    h = s.authorize("a1", 300)
+    s.void(h.hold_id)
+    with pytest.raises(ValueError):
+        s.capture(h.hold_id)              # capture a voided hold
+
+
+def test_unknown_hold_raises():
+    s = acct()
+    with pytest.raises(ValueError):
+        s.void("nope")
+
+
+def test_authorize_rejects_nonpositive():
+    s = acct()
+    with pytest.raises(ValueError):
+        s.authorize("a1", 0)

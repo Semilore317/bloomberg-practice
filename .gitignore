@@ -9,5 +9,11 @@ cpp/tests
 **/cpp/tests
 *.o
 *.out
-# Java build artifacts
+# Java build artifacts 
 *.class
+#local practice
+dpractice/
+
+# local scratch, not part of the pack set
+/practice/
+.DS_Store
