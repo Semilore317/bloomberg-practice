@@ -17,3 +17,7 @@ dpractice/
 # local scratch, not part of the pack set
 /practice/
 .DS_Store
+
+# local session helper, not part of the pack set
+random.py
+names.json
