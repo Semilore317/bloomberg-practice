@@ -132,3 +132,10 @@ You can switch it to an ordinary assistant, and that choice is recorded with the
 It is free to start and needs an account. Use Groundwork for the "unfamiliar codebase under
 time pressure" muscle in TypeScript and Python; use the packs in this repo when you want to
 drill offline, or in C++ and Java, or rehearse the round-1 explain-out-loud flow.
+
+
+## Baseline vs Solutions
+
+- `round-1/` and `round-2/` contain the original unsolved exercises (problem statements, READMEs, tickets, and source). These are preserved as the baseline.
+- `solutions/` mirrors the exercise structure and contains completed solutions. For example, `solutions/round-1/python/cobalt/` has the fixed implementation and regression tests.
+- To run a solution, use the same conventions as the baseline (e.g., `pytest -q` in the solution directory if tests are present).
