@@ -24,25 +24,8 @@ Time budget: about 45 minutes.
 ## Reproduce and test it yourself
 
 This pack ships no tests. The code is the same in `python/`, `cpp/`, and `java/`;
-pick one (see [SETUP.md](SETUP.md)). Work from the tickets in `tickets/`: for each,
 write a test that reproduces the reported behaviour, confirm it fails, fix the
 code, and keep your own test green.
-
-## Repository map
-
-## Repository map
-
-```text
-bus/
-  models.py         domain types (Subscription)
-  errors.py         BusError
-  topics.py         TopicMatcher: pattern/topic matching
-  subscriptions.py  SubscriptionRegistry: add / remove / all
-  router.py         Router: publish -> match -> deliver
-  service.py        MessageBus: subscribe / unsubscribe / publish
-tests/              shipped regression tests
-tickets/            reported work
-```
 
 ## Product rules already agreed
 
@@ -51,72 +34,9 @@ tickets/            reported work
 - one subscriber's failure must not stop delivery to the others.
 
 
----
+## How to run
 
-# Tickets
-
-## BUS-21-wildcards.md
-
-# BUS-21: Wildcard subscriptions never match
-
-## Report
-
-Subscribers using `"px.*"` or `"*"` receive nothing. Only exact-topic subscriptions get messages,
-so every wildcard consumer is silently broken.
-
-## Acceptance criteria
-
-- `"px.*"` matches `"px.AAPL"` and any single trailing segment under `px`;
-- `"*"` matches every topic;
-- an exact pattern still matches only its exact topic;
-- add a test that subscribes with `"px.*"` and asserts delivery of a `"px.AAPL"` message.
-
-Do not change the subscription registry or the router loop as part of this ticket.
-
-
-## BUS-27-unsubscribe.md
-
-# BUS-27: Unsubscribe does nothing
-
-## Report
-
-After a client unsubscribes it keeps receiving messages. The registry's remove path compares the
-wrong fields, so nothing is ever removed and subscriptions leak.
-
-## Acceptance criteria
-
-- after `unsubscribe(token)`, that subscription no longer receives messages;
-- the subscription is actually removed from the registry;
-- other subscriptions are unaffected;
-- add a test that subscribes, unsubscribes, publishes, and asserts no delivery.
-
-Do not change topic matching or the router loop as part of this ticket.
-
-
-## BUS-33-fanout.md
-
-# BUS-33: A raising subscriber aborts delivery
-
-## Report
-
-If one subscriber's callback raises, the subscribers after it on the same topic receive nothing.
-A single bad consumer is breaking fan-out for everyone.
-
-## Acceptance criteria
-
-- an exception in one callback does not stop delivery to the others;
-- the handling of a failing callback is explicit rather than accidental;
-- delivery to healthy subscribers still happens in order;
-- add a test with one raising subscriber and one healthy subscriber that still receives the message.
-
-Do not change topic matching or the subscription registry as part of this ticket.
-
-
-
-
----
-
-# Setup and Test Instructions
+This pack ships no tests. Pick one language and write your own tests to reproduce and verify fixes. See instructions below.
 
 # Setup
 
@@ -148,4 +68,13 @@ Write your own `Check.java` with a `main` that exercises the classes, then:
 
 ```bash
 cd java && javac *.java && java Check
+```
+
+
+## Running tests
+
+Write your own `Check.java` with a `main` method, then:
+
+```bash
+javac *.java && java Check
 ```

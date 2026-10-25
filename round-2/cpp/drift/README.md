@@ -24,25 +24,8 @@ Time budget: about 45 minutes.
 ## Reproduce and test it yourself
 
 This pack ships no tests. The code is the same in `python/`, `cpp/`, and `java/`;
-pick one (see [SETUP.md](SETUP.md)). Work from the tickets in `tickets/`: for each,
 write a test that reproduces the reported behaviour, confirm it fails, fix the
 code, and keep your own test green.
-
-## Repository map
-
-## Repository map
-
-```text
-fulfillment/
-  models.py        domain types (Sku, Reservation)
-  errors.py        ValidationError, UnknownSku, OutOfStock
-  catalog.py       the SKU catalog (add / exists / require)
-  inventory.py     physical on-hand counts per SKU
-  reservations.py  the reservation book (place / release / reserved)
-  service.py       FulfillmentService: available(), reserve(), release()
-tests/             shipped regression tests
-tickets/           reported work
-```
 
 ## Product rules already agreed
 
@@ -52,73 +35,9 @@ tickets/           reported work
 - an unknown SKU is rejected at the boundary.
 
 
----
+## How to run
 
-# Tickets
-
-## DRIFT-101-stuck-reservations.md
-
-# DRIFT-101: Released reservations keep holding stock
-
-## Report
-
-`release` does not actually free a reservation, so availability never recovers after a hold is
-cancelled. Stock stays locked away from new orders.
-
-## Acceptance criteria
-
-- after `release`, the reservation no longer counts toward `reserved` or `available`;
-- releasing an unknown reservation id is a no-op, not an error;
-- availability returns to on-hand minus the remaining active reservations;
-- add a test that reserves, releases, and asserts availability is restored.
-
-Do not change the oversell check as part of this ticket.
-
-
-## DRIFT-88-availability.md
-
-# DRIFT-88: Availability ignores reservations
-
-## Report
-
-The same stock is being promised twice. `available(sku)` returns the physical on-hand count and
-ignores reservations that are already holding some of it, so two orders can each be told the stock
-is free.
-
-## Acceptance criteria
-
-- `available(sku)` equals on-hand minus active reservations for that SKU;
-- reserving stock immediately lowers availability by the reserved amount;
-- availability for other SKUs is unaffected;
-- add a test that reserves part of the stock and asserts availability drops.
-
-Do not change the inventory or catalog modules as part of this ticket.
-
-
-## DRIFT-92-oversell.md
-
-# DRIFT-92: Reservations can oversell
-
-## Report
-
-A reservation larger than what is available succeeds and drives availability negative. Warehouses
-are getting orders they cannot fill.
-
-## Acceptance criteria
-
-- reserving more than `available(sku)` raises `OutOfStock`;
-- a rejected reservation leaves availability unchanged;
-- a reservation exactly equal to availability is allowed;
-- add a test that attempts to reserve beyond availability and asserts it raises.
-
-Do not change the reservation-release path as part of this ticket.
-
-
-
-
----
-
-# Setup and Test Instructions
+This pack ships no tests. Pick one language and write your own tests to reproduce and verify fixes. See instructions below.
 
 # Setup
 
@@ -150,4 +69,13 @@ Write your own `Check.java` with a `main` that exercises the classes, then:
 
 ```bash
 cd java && javac *.java && java Check
+```
+
+
+## Running tests
+
+Write your own `test.cpp` that includes the headers, then:
+
+```bash
+g++ -std=c++17 test.cpp -o test && ./test
 ```

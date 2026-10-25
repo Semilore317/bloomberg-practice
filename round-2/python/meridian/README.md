@@ -24,25 +24,8 @@ Time budget: about 45 minutes.
 ## Reproduce and test it yourself
 
 This pack ships no tests. The code is the same in `python/`, `cpp/`, and `java/`;
-pick one (see [SETUP.md](SETUP.md)). Work from the tickets in `tickets/`: for each,
 write a test that reproduces the reported behaviour, confirm it fails, fix the
 code, and keep your own test green.
-
-## Repository map
-
-## Repository map
-
-```text
-blike_calendar/
-  database.py    SQLite persistence (requests + events), find_by_idempotency_key
-  directory.py   internal employee lookup
-  models.py      domain types (BusinessTier, MeetingRequest, CalendarEvent, RequestStatus)
-  scheduler.py   scheduling around protected events; conflict arbitration
-  scorer.py      deterministic stand-in for an opaque relevance model
-  service.py     request intake (SchedulingService: submit_request, accept, reject)
-tests/           shipped regression tests
-tickets/         reported work
-```
 
 ## Product rules already agreed
 
@@ -53,98 +36,9 @@ tickets/         reported work
 - status flow is PENDING to ACCEPTED or REJECTED, and REJECTED is terminal.
 
 
----
+## How to run
 
-# Tickets
-
-## CAL-TICKET-duplicate-request.md
-
-# CAL-TICKET: duplicate request after retry
-
-## Report
-
-Occasionally the same meeting request appears twice. It is most common when the requester's
-connection is unstable and the client retries before receiving a response. Slow, sequential
-retries normally return the original request, so a naive sequential test can pass while the real
-problem remains.
-
-## Acceptance criteria
-
-- one requester and idempotency key produce exactly one stored request;
-- overlapping submissions return the same request id rather than an internal error;
-- the same idempotency key may be used by two different requesters;
-- the fast existing lookup may remain, but correctness cannot depend on its timing;
-- add a test that sends overlapping submissions, not merely sequential calls.
-
-Do not redesign scheduling or relevance scoring as part of this ticket.
-
-
-## CAL-TICKET-overlap-arbitration.md
-
-# CAL-TICKET: meetings booked over protected commitments
-
-## Report
-
-Employees are being double-booked: a scheduled meeting lands in a slot already held by a protected
-calendar event. Requests are supposed to be scheduled in batches *around* protected commitments,
-never on top of them.
-
-## Acceptance criteria
-
-- `schedule_batch` never accepts a request that overlaps a protected event;
-- half-open intervals hold: a request ending when a protected block starts is fine;
-- the invariant holds regardless of the order requests are considered;
-- add a test with one protected event and a request that overlaps it.
-
-State the overlap invariant in your own words before changing code. Do not change the scoring
-model as part of this ticket.
-
-
-## CAL-TICKET-scorer-failure.md
-
-# CAL-TICKET: high-tier requests lose their slot
-
-## Report
-
-Executive assistants report that a STANDARD request sometimes wins a slot over an EXECUTIVE one.
-Scheduling is meant to prefer the higher business tier, breaking ties in favour of the earlier
-submission. The relevance scorer is a deterministic stand-in; the ranking it produces is what the
-scheduler consumes.
-
-## Acceptance criteria
-
-- among requests contending for a slot, the higher `business_tier` is scheduled first;
-- equal tiers are ordered by earlier `submitted_at`;
-- the fix lives in the ranking, not in a special case inside the scheduler loop;
-- add a test where an EXECUTIVE and a STANDARD request contend and the EXECUTIVE wins.
-
-Do not change persistence or the request intake path as part of this ticket.
-
-
-## CAL-TICKET-terminal-status.md
-
-# CAL-TICKET: rejected requests can be re-accepted
-
-## Report
-
-Audit found requests that moved from REJECTED back to ACCEPTED with no error. A rejection is
-final; once a request is rejected it must stay rejected.
-
-## Acceptance criteria
-
-- accepting a request that is already REJECTED raises a clear error;
-- the request's status is left unchanged when the transition is refused;
-- valid transitions (PENDING to ACCEPTED or REJECTED) still work;
-- add a test that rejects a request and then asserts accept raises.
-
-Do not change the scheduler or scorer as part of this ticket.
-
-
-
-
----
-
-# Setup and Test Instructions
+This pack ships no tests. Pick one language and write your own tests to reproduce and verify fixes. See instructions below.
 
 # Setup
 
@@ -176,4 +70,13 @@ Write your own `Check.java` with a `main` that exercises the classes, then:
 
 ```bash
 cd java && javac *.java && java Check
+```
+
+
+## Running tests
+
+Write your own tests as `test_*.py` in this directory. A `conftest.py` is provided for local imports. Work from the tickets in `tickets/`.
+
+```bash
+pytest -q
 ```

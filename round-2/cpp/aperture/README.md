@@ -24,25 +24,8 @@ Time budget: about 45 minutes.
 ## Reproduce and test it yourself
 
 This pack ships no tests. The code is the same in `python/`, `cpp/`, and `java/`;
-pick one (see [SETUP.md](SETUP.md)). Work from the tickets in `tickets/`: for each,
 write a test that reproduces the reported behaviour, confirm it fails, fix the
 code, and keep your own test green.
-
-## Repository map
-
-## Repository map
-
-```text
-orchestration/
-  models.py      domain types (Job, JobStatus)
-  errors.py      UnknownJob
-  queue.py       the FIFO ready queue (push / pop / peek / remove)
-  registry.py    per-job status and attempt tracking
-  dispatcher.py  dequeue / ack / nack / dead_letters
-  service.py     OrchestrationService: enqueue / dequeue / ack / nack
-tests/           shipped regression tests
-tickets/         reported work
-```
 
 ## Product rules already agreed
 
@@ -52,72 +35,9 @@ tickets/         reported work
   times, at which point it is dead-lettered rather than re-queued.
 
 
----
+## How to run
 
-# Tickets
-
-## APT-410-redelivery.md
-
-# APT-410: Jobs are handed out repeatedly
-
-## Report
-
-Workers keep processing the same job. `dequeue` returns a job but does not remove it from the
-ready queue or mark it in flight, so several workers pick up the same work at once.
-
-## Acceptance criteria
-
-- a dequeued job is removed from the ready queue;
-- the next `dequeue` returns a different job, or `None` when the queue is empty;
-- the dequeued job is marked in flight in the registry;
-- add a test that enqueues one job and asserts the second `dequeue` returns `None`.
-
-Do not change the retry or dead-letter logic as part of this ticket.
-
-
-## APT-415-ack-redelivery.md
-
-# APT-415: Acked jobs can be handed out again
-
-## Report
-
-A completed job can still be dequeued. After `ack`, a job should be out of circulation; instead it
-can be redelivered and processed twice.
-
-## Acceptance criteria
-
-- after `ack`, `dequeue` never returns that job again;
-- the job's status reflects completion;
-- acking a job that is not in flight does not corrupt the queue;
-- add a test that enqueues, dequeues, acks, and asserts the next `dequeue` is `None`.
-
-Do not change the retry or dead-letter logic as part of this ticket.
-
-
-## APT-421-retries.md
-
-# APT-421: Retry count never advances; nothing dead-letters
-
-## Report
-
-A failing job retries forever and never reaches the dead-letter list. `nack` does not advance the
-attempt count, and the dead-letter threshold is off by one, so the limit is never hit.
-
-## Acceptance criteria
-
-- each `nack` advances the job's attempt count by one;
-- with `max_retries=N`, the Nth `nack` moves the job to the dead-letter list instead of re-queueing;
-- a job below the limit is re-queued and can be dispatched again;
-- add tests at `max_retries=1` and `max_retries=2` asserting the job dead-letters on the Nth nack.
-
-Do not change the dequeue path as part of this ticket.
-
-
-
-
----
-
-# Setup and Test Instructions
+This pack ships no tests. Pick one language and write your own tests to reproduce and verify fixes. See instructions below.
 
 # Setup
 
@@ -149,4 +69,13 @@ Write your own `Check.java` with a `main` that exercises the classes, then:
 
 ```bash
 cd java && javac *.java && java Check
+```
+
+
+## Running tests
+
+Write your own `test.cpp` that includes the headers, then:
+
+```bash
+g++ -std=c++17 test.cpp -o test && ./test
 ```
