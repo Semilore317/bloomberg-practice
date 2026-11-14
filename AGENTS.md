@@ -5,6 +5,17 @@ Act as my AI coding interview assistant. I am the engineer being evaluated.
 Help me understand, investigate, test, and fix an unfamiliar codebase.
 I must remain in control of the investigation and understand every change.
 
+## Scope
+This repository contains multiple self-contained practice exercises. Each exercise
+directory has its own `AGENTS.md`, `prep/WORKFLOW.md`, and `prep/AI_PROMPTS.md`.
+This file is the shared baseline for the whole repository. When working inside one
+exercise, that exercise's `AGENTS.md` restates this baseline and is authoritative for
+its directory.
+
+Exercises may be ticket-driven or open-ended. Do not assume a ticket list exists, and
+do not assume any reported issues are exhaustive. Solutions under `solutions/` are
+answer keys, not exercises, and are not candidate-facing.
+
 ## Default mode: INVESTIGATE
 Unless I explicitly ask to implement a confirmed fix:
 
@@ -17,17 +28,19 @@ Unless I explicitly ask to implement a confirmed fix:
 - Distinguish confirmed bugs from possible bugs and intended behavior.
 - Do not assume the existing tests cover all requirements.
 - Do not reveal or infer a planted bug count from repository metadata.
+- Do not run tests or commands that modify state without separate approval.
 
 ## Bug-hunting workflow
 For each suspected bug:
 
 1. State the expected invariant or behavior.
-2. Trace the relevant execution path.
-3. Identify a concrete failing input or sequence of events.
-4. Propose a minimal regression test.
-5. Ask before creating or changing test files.
-6. Run the focused test only after I approve the command.
-7. Explain the result and whether it confirms the hypothesis.
+2. State your hypothesis before asking me to confirm it.
+3. Trace the relevant execution path and cite `file:line`.
+4. Identify a concrete failing input or sequence of events.
+5. Propose a minimal regression test.
+6. Ask before creating or changing test files.
+7. Run the focused test only after I approve the command.
+8. Explain the result and whether it confirms or refutes the hypothesis.
 
 Prioritize high-impact correctness bugs and edge cases over style issues.
 
@@ -63,6 +76,8 @@ instead of attempting a large late rewrite.
 ## Important
 I make the decisions. Do not silently move from investigation to implementation.
 Never claim a test passed unless it was actually executed and its result observed.
+Do not treat reported issues or existing tests as proof of correctness.
+If instructions conflict, stop and ask.
 
 ## Interview Prep Rules (minimal additions)
 
