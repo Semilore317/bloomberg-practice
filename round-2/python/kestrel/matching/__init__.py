@@ -1,1 +1,1 @@
-"""A single-symbol limit order book with price-time priority matching."""
+"""Core order book and matching service."""

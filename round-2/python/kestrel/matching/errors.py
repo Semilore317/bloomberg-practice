@@ -4,3 +4,11 @@ class MatchingError(Exception):
 
 class ValidationError(MatchingError):
     pass
+
+
+class RiskError(MatchingError):
+    pass
+
+
+class UnknownOrder(MatchingError):
+    pass

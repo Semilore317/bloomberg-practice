@@ -1,8 +1,11 @@
 # Acceptance criteria
 
-- after `cancel(order_id)`, the order no longer rests on either side;
-- a subsequent crossing order does not match the cancelled order;
-- cancelling an unknown order id is a no-op, not an error;
-- add a test that rests an order, cancels it, and asserts a crossing order produces no trade.
+Across all tickets:
 
-Do not change the matching algorithm as part of this ticket.
+- each fix is confirmed by a small test written from the reported symptom;
+- existing correct behaviour stays green (price priority, validation, event publishing);
+- public entry points keep their signatures;
+- no fixture, clock, or configuration default is changed just to make a test pass;
+- the test fails before the fix and passes after it.
+
+See individual ticket files for the specific invariant each one protects.

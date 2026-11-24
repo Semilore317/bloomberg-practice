@@ -1,16 +1,18 @@
 # Matching Engine
 
-Welcome to the team that runs the order book. A single-symbol limit order book matches incoming
-orders against resting ones with price-time priority: best price first and, within a price level,
-oldest order first. Partial fills reduce the resting quantity; the unfilled remainder of an
-incoming order rests.
+Welcome to the team that runs the order book. A single-symbol limit order book matches
+incoming orders against resting ones with price-time priority: best price first and, within a
+price level, oldest order first. Partial fills reduce the resting quantity; the unfilled
+remainder of an incoming order rests.
 
-This repository has three reported problems in `tickets/`. Your interviewer will tell you which
+This is a larger service than a single class: order entry, pre-trade risk, matching, trade
+capture, position tracking, market data, and session controls are split into separate
+packages. The reported problems live in `tickets/`. Your interviewer will tell you which
 ticket to start with. You are not expected to finish every ticket.
 
-You may use the available AI assistant and normal repository tools. Treat the assistant like a
-junior developer: establish a plan, inspect its work, run the tests, and retain ownership of the
-result.
+You may use the available AI assistant and normal repository tools. Treat the assistant like
+a junior developer: establish a plan, inspect its work, run the tests, and retain ownership of
+the result.
 
 ## Scope
 
@@ -21,6 +23,21 @@ Out of scope: redesigning the services, changing public APIs, or adding features
 ticket asks for.
 
 Time budget: about 45 minutes.
+
+## Service map
+
+| Package | Responsibility |
+| --- | --- |
+| `gateway/` | `Engine` entry point, order requests, per-session rate limiting |
+| `matching/` | `OrderBook`, price-time priority, fill handling, `MatchingService` orchestration |
+| `risk/` | Fat-finger checks, position limits, self-trade guard |
+| `ledger/` | Trade log, position book, settlement arithmetic |
+| `marketdata/` | Cached best quote, depth snapshots, subscriber fan-out |
+| `infra/` | Injected clock, engine config, event bus |
+| `tickets/` | Reported problems, each with acceptance criteria and a scope boundary |
+
+The usual flow is `Engine.submit()` → session check → `MatchingService.submit()` → risk check →
+`OrderBook.limit()` → trade capture and positions → quote invalidation and event publish.
 
 ## Reproduce and test it yourself
 
@@ -33,8 +50,14 @@ code, and keep your own test green.
 - matching is price-time priority: best price first, then oldest resting order (FIFO) at a price;
 - a partial fill reduces the resting order's quantity; it is not removed until fully filled;
 - the unfilled remainder of an incoming order rests in the book;
-- a cancelled order no longer rests and cannot match.
-
+- a cancelled order no longer rests and cannot match;
+- iceberg orders show only their display quantity and refill it from hidden reserve;
+- self-trades are rejected before a trade is created;
+- risk checks happen before an order can execute;
+- replaying the same event id must not create a second ledger entry;
+- market data reflects the current book after every match and cancellation;
+- a slow or broken subscriber must not stop other subscribers from receiving an event;
+- a session is allowed at most `rate_limit` orders per window.
 
 ## How to run
 
@@ -71,7 +94,6 @@ Write your own `Check.java` with a `main` that exercises the classes, then:
 ```bash
 cd java && javac *.java && java Check
 ```
-
 
 ## Running tests
 
