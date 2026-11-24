@@ -26,7 +26,10 @@ class EventBus:
     def publish(self, event: Event) -> None:
         self._published.append(event)
         for handler in self.handlers(event.topic):
-            handler(event)
+            try:
+                handler(event)
+            except Exception:
+                pass
 
     def published(self) -> List[Event]:
         return list(self._published)

@@ -12,7 +12,7 @@ class SessionLimiter:
     def allow(self, key: str, now: int) -> bool:
         hits = [t for t in self._hits.get(key, []) if now - t < self.window]
         self._hits[key] = hits
-        if len(hits) > self.limit:
+        if len(hits) >= self.limit:
             return False
         hits.append(now)
         return True

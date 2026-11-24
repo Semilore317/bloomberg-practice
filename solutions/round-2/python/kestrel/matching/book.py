@@ -27,7 +27,7 @@ class OrderBook:
         order = self._orders.get(order_id)
         if order is None:
             return False
-        book = self._asks if order.side == "buy" else self._bids
+        book = self._bids if order.side == "buy" else self._asks
         if order in book:
             book.remove(order)
         return True
@@ -53,7 +53,7 @@ class OrderBook:
     def _consume(self, maker: Order, fill: int) -> None:
         maker.qty -= fill
         if maker.order_type == "iceberg" and maker.qty == 0 and maker.reserve:
-            maker.qty = min(maker.qty, maker.reserve)
+            maker.qty = min(maker.display_qty, maker.reserve)
             maker.reserve -= maker.qty
 
     def limit(self, order: Order) -> List[Trade]:
@@ -88,7 +88,7 @@ class OrderBook:
             )
             remaining -= fill
             self._consume(maker, fill)
-            if maker.qty <= 0 or maker.order_type != "iceberg":
+            if maker.qty <= 0:
                 opposite.pop(i)
             else:
                 i += 1

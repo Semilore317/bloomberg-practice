@@ -56,14 +56,16 @@ class MatchingService:
             order_type=order_type,
             display_qty=display_qty or self.config.default_display_qty,
         )
-        trades = self.book.limit(order)
-        for trade in trades:
-            self.ledger.record(trade, event_id=event_id)
-            self.positions.apply(trade)
         self.risk.pre_trade(account, side, price, qty, self.positions)
+        trades = self.book.limit(order)
+        captured = []
+        for trade in trades:
+            if self.ledger.record(trade, event_id=event_id):
+                self.positions.apply(trade)
+                captured.append(trade)
         self.quotes.invalidate()
         self.publisher.publish_quote()
-        return trades
+        return captured
 
     def cancel(self, order_id: str) -> bool:
         cancelled = self.book.cancel(order_id)

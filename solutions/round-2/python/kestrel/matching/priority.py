@@ -4,8 +4,8 @@ from .models import Order
 
 
 def ask_key(order: Order):
-    return (order.price, -order.seq)
+    return (order.price, order.seq)
 
 
 def bid_key(order: Order):
-    return (-order.price, -order.seq)
+    return (-order.price, order.seq)

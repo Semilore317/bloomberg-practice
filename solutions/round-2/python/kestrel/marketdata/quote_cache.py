@@ -17,4 +17,4 @@ class QuoteCache:
         return self._best
 
     def invalidate(self) -> None:
-        return None
+        self._best = None

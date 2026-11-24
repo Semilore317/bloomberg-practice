@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from infra.config import EngineConfig
+from matching.errors import RiskError
 
 from .fatfinger import FatFingerCheck
 from .limits import PositionLimits
@@ -17,5 +18,5 @@ class RiskGateway:
         self.limits.check(account, side, qty, positions)
 
     def check_self_trade(self, maker_account: str, taker_account: str) -> None:
-        if maker_account and taker_account:
-            return None
+        if maker_account and taker_account and maker_account == taker_account:
+            raise RiskError("self-trade rejected")

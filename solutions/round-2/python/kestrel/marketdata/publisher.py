@@ -10,5 +10,4 @@ class QuotePublisher:
 
     def publish_quote(self) -> None:
         event = Event("quote", {"best": self.cache.best()})
-        for handler in self.bus.handlers("quote"):
-            handler(event)
+        self.bus.publish(event)
